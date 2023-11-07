@@ -7,11 +7,12 @@ import javax.inject.Inject
 class QuoteRepo @Inject constructor(private val apiInterface: ApiInterface){
 
     fun getQuotes(category:String)= apiResult {
-        apiInterface.getQuotes(category)
+        apiInterface.getQuotes("tweets[?(@.category==\"$category\")]")
     }
-
 
     fun getCategories()= apiResult {
         apiInterface.getCategories()
     }
+
+
 }
