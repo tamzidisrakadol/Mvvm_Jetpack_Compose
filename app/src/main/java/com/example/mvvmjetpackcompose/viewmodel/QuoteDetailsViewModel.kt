@@ -9,6 +9,6 @@ import javax.inject.Inject
 @HiltViewModel
 class QuoteDetailsViewModel @Inject constructor(quoteRepo: QuoteRepo,savedStateHandle: SavedStateHandle):ViewModel() {
 
-    val category = savedStateHandle.get<String>("category") ?: "Happy Quote"
+    private val category = savedStateHandle.get<String>("category") ?: "Happy Quote"
     val details = quoteRepo.getQuotes(category)
 }
