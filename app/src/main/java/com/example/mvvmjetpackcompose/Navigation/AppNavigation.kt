@@ -9,6 +9,8 @@ import androidx.navigation.navArgument
 import com.example.mvvmjetpackcompose.screens.QuoteDetailsScreen
 import com.example.mvvmjetpackcompose.screens.QuoteListScreen
 
+
+
 @Composable
 fun AppNavigation(){
     val navController = rememberNavController()

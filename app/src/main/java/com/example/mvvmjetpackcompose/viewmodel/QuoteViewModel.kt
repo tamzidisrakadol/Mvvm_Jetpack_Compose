@@ -1,5 +1,7 @@
 package com.example.mvvmjetpackcompose.viewmodel
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mvvmjetpackcompose.repository.QuoteRepo
@@ -10,7 +12,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 
 @HiltViewModel
-class QuoteViewModel @Inject constructor(private val quoteRepo: QuoteRepo) :ViewModel() {
+class QuoteViewModel @Inject constructor(quoteRepo: QuoteRepo) :ViewModel() {
     val categories = quoteRepo.getCategories()
 
 }

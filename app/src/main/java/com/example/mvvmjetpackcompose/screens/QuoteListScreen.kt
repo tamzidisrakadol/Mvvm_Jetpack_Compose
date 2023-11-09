@@ -24,7 +24,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,20 +45,39 @@ import com.example.mvvmjetpackcompose.R
 import com.example.mvvmjetpackcompose.utils.ApiResponse
 import com.example.mvvmjetpackcompose.viewmodel.QuoteViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 @Composable
 fun QuoteListScreen(onClick : (category:String)-> Unit) {
     val quoteViewModel: QuoteViewModel = hiltViewModel()
+
     val categoryState = remember {
         quoteViewModel.categories
     }
+    val isScreenLoaded = remember {
+        mutableStateOf(false)
+    }
     val categoryData = categoryState.collectAsState(initial = ApiResponse.Loading)
+
     when (val result = categoryData.value) {
         is ApiResponse.Success -> {
+
             val list = result.data
+
+            LaunchedEffect(key1 = true){
+                delay(2000)
+                isScreenLoaded.value = true
+            }
+
             Log.d("post","${list?.distinct()}")
-            QuoteListShow(categoryNamesList = list!!.distinct(), onClick = onClick)
+
+            if (isScreenLoaded.value){
+                QuoteListShow(categoryNamesList = list!!.distinct(), onClick = onClick)
+            }else{
+                CategoryLoadingScreen()
+            }
+
         }
 
         is ApiResponse.Failure -> {
@@ -65,7 +86,7 @@ fun QuoteListScreen(onClick : (category:String)-> Unit) {
 
         ApiResponse.Loading -> {
             CategoryLoadingScreen()
-            Log.d("post", "Loading....")
+            Log.d("post", "Loading.... ")
         }
     }
 
@@ -77,10 +98,10 @@ fun CategoryLoadingScreen() {
     Box(modifier = Modifier.fillMaxSize(1f),contentAlignment = Alignment.Center) {
         Text(
             text = "Loading...", style = TextStyle(
-                fontSize = 30.sp, color = Color.Black,
+                fontSize = 18.sp, color = Color.Black,
                 fontFamily = FontFamily.SansSerif,
-                textAlign = TextAlign.Center
-            )
+                textAlign = TextAlign.Center),
+
         )
     }
 
