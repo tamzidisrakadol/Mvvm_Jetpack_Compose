@@ -19,9 +19,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,47 +38,36 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.mvvmjetpackcompose.model.QuoteModel
 import com.example.mvvmjetpackcompose.utils.ApiResponse
 import com.example.mvvmjetpackcompose.viewmodel.QuoteDetailsViewModel
+import com.example.mvvmjetpackcompose.viewmodel.QuoteViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
 @Composable
 fun QuoteDetailsScreen(){
-    val quoteViewModel:QuoteDetailsViewModel = hiltViewModel()
-    val categoryState = remember {
-        quoteViewModel.details
-    }
-    val isScreenLoaded = remember{
-        mutableStateOf(false)
-    }
+    val quoteViewModel: QuoteDetailsViewModel = hiltViewModel()
+    var quoteList by remember { mutableStateOf<List<QuoteModel>?>(null) }
 
-    val categoryData = categoryState.collectAsState(initial = ApiResponse.Loading)
-    when (val result = categoryData.value) {
-        is ApiResponse.Success -> {
-            val list = result.data
-            Log.d("post","$list")
-
-            LaunchedEffect(key1 = true){
-                delay(2000)
-                isScreenLoaded.value = true
+    LaunchedEffect(key1 = Unit){
+        quoteViewModel.details.collect{response->
+            when(response){
+                is ApiResponse.Success->{
+                    quoteList = response.data!!
+                    Log.d("post","$quoteList")
+                }
+                is ApiResponse.Failure->{
+                    Log.d("post", "Fail Msg: ${response.msg}")
+                }
+                ApiResponse.Loading->{
+                    Log.d("post", "Loading api calls")
+                }
             }
-
-            if (isScreenLoaded.value){
-                QuoteDetailsShow(quoteList = list!!)
-            }else{
-                QuoteDetailsLoadingScreen()
-            }
-
-        }
-        is ApiResponse.Failure -> {
-            Log.d("post", result.msg)
-        }
-
-        ApiResponse.Loading -> {
-            QuoteDetailsLoadingScreen()
-
         }
     }
+
+    quoteList?.let {quote->
+        QuoteDetailsShow(quoteList = quote)
+    } ?: QuoteDetailsLoadingScreen()
 
 
 }

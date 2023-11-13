@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,12 +22,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,62 +39,42 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mvvmjetpackcompose.R
 import com.example.mvvmjetpackcompose.utils.ApiResponse
 import com.example.mvvmjetpackcompose.viewmodel.QuoteViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+
 
 @Composable
-fun QuoteListScreen(quoteViewModel: QuoteViewModel= hiltViewModel()) {
-//    onClick : (category:String)-> Unit
-//    val quoteViewModel: QuoteViewModel = hiltViewModel()
-//
-//    val  categoryFinalList = remember {
-//        mutableStateOf<List<String>?>(null)
-//    }
-//
-//    val categoryState = remember {
-//        quoteViewModel.categories
-//    }
-//
-//    val categoryData = categoryState.collectAsState(initial = ApiResponse.Loading)
-//
-//    when (val result = categoryData.value) {
-//        is ApiResponse.Success -> {
-//            categoryFinalList.value = result.data
-//            Log.d("post","${categoryFinalList.value?.distinct()}")
-//            QuoteListShow(categoryNamesList = categoryFinalList.value!!.distinct(), onClick =onClick)
-//        }
-//
-//        is ApiResponse.Failure -> {
-//            Log.d("post", result.msg)
-//        }
-//
-//        ApiResponse.Loading -> {
-//            CategoryLoadingScreen()
-//            Log.d("post", "Loading.... ")
-//        }
-//    }
-    LaunchedEffect(key1 = Unit){
-        quoteViewModel.categories.collect{
-            when(it){
-                is ApiResponse.Success->{
-                    Log.d("post","${it.data?.distinct()}")
+fun QuoteListScreen(onClick: (category: String) -> Unit) {
+    val quoteViewModel: QuoteViewModel = hiltViewModel()
+
+    // State to hold the categories list
+    var categoryList by remember { mutableStateOf<List<String>?>(null) }
+
+    // Collect the categories from the ViewModel
+    LaunchedEffect(quoteViewModel.categories) {
+        quoteViewModel.categories.collect { response ->
+            when (response) {
+                is ApiResponse.Success -> {
+                    // Update the categoryList when the API call is successful
+                    categoryList = response.data?.distinct()
+                    Log.d("post", "Categories: ${categoryList}")
                 }
-                is ApiResponse.Failure ->{
-                    Log.d("post","${it.msg}")
+                is ApiResponse.Failure -> {
+                    Log.d("post", "Fail Msg: ${response.msg}")
                 }
-                ApiResponse.Loading->{
-                    Log.d("post","Loading api calls")
+                ApiResponse.Loading -> {
+                    Log.d("post", "Loading api calls")
                 }
             }
         }
     }
 
+    // Render the UI based on the categoryList
+    categoryList?.let { categories ->
+        QuoteListShow(categoryNamesList = categories, onClick = onClick)
+    } ?: CategoryLoadingScreen()
 }
-
 
 
 @Composable

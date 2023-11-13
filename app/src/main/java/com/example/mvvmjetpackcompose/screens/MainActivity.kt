@@ -16,6 +16,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.lifecycleScope
+import com.example.mvvmjetpackcompose.Navigation.AppNavigation
 import com.example.mvvmjetpackcompose.ui.theme.MvvmJetpackComposeTheme
 import com.example.mvvmjetpackcompose.utils.ApiResponse
 import com.example.mvvmjetpackcompose.viewmodel.QuoteViewModel
@@ -25,13 +26,10 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val quoteViewModel: QuoteViewModel by viewModels()
-
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-  //          getCategories()
             MvvmJetpackComposeTheme {
                 Scaffold(
                     topBar = {
@@ -46,32 +44,15 @@ class MainActivity : ComponentActivity() {
                     }
                 ) {
                     Box(modifier = Modifier.padding(it)) {
-                    //    AppNavigation()
-                        QuoteListScreen()
+                        AppNavigation()
+
                     }
                 }
             }
         }
     }
 
-    private fun getCategories() {
-        lifecycleScope.launch {
-            quoteViewModel.categories.collect{
-                when(it){
-                    is ApiResponse.Success->{
-                        Log.d("post","${it.data?.distinct()}")
-                    }
-                    is ApiResponse.Failure->{
-                        Log.d("post","${it.msg}")
-                    }
-                    ApiResponse.Loading->{
-                        Log.d("post","Loading api calls")
-                    }
-                }
-            }
-        }
 
-    }
 
 
 }
