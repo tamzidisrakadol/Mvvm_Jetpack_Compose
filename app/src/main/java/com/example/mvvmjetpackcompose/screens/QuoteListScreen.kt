@@ -51,20 +51,22 @@ fun QuoteListScreen(onClick: (category: String) -> Unit) {
     // State to hold the categories list
     var categoryList by remember { mutableStateOf<List<String>?>(null) }
 
-    // Collect the categories from the ViewModel
+    // Fetch the data only once when the composable is first launched
     LaunchedEffect(quoteViewModel.categories) {
-        quoteViewModel.categories.collect { response ->
-            when (response) {
-                is ApiResponse.Success -> {
-                    // Update the categoryList when the API call is successful
-                    categoryList = response.data?.distinct()
-                    Log.d("post", "Categories: ${categoryList}")
-                }
-                is ApiResponse.Failure -> {
-                    Log.d("post", "Fail Msg: ${response.msg}")
-                }
-                ApiResponse.Loading -> {
-                    Log.d("post", "Loading api calls")
+        if (categoryList == null) {
+            quoteViewModel.categories.collect { response ->
+                when (response) {
+                    is ApiResponse.Success -> {
+                        // Update the categoryList when the API call is successful
+                        categoryList = response.data?.distinct()
+                        Log.d("post", "Categories: ${categoryList}")
+                    }
+                    is ApiResponse.Failure -> {
+                        Log.d("post", "Fail Msg: ${response.msg}")
+                    }
+                    ApiResponse.Loading -> {
+                        Log.d("post", "Loading api calls")
+                    }
                 }
             }
         }

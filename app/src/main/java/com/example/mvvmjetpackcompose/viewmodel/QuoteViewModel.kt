@@ -10,9 +10,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.single
 
 @HiltViewModel
-class QuoteViewModel @Inject constructor(quoteRepo: QuoteRepo) :ViewModel() {
-    val categories = quoteRepo.getCategories()
+class QuoteViewModel @Inject constructor(private val quoteRepo: QuoteRepo) :ViewModel() {
+    val categories: Flow<ApiResponse<List<String>?>> = quoteRepo.getCategories()
 }
