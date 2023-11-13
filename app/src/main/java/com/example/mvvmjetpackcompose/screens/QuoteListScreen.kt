@@ -24,9 +24,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,51 +49,56 @@ import com.example.mvvmjetpackcompose.viewmodel.QuoteViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
 @Composable
-fun QuoteListScreen(onClick : (category:String)-> Unit) {
-    val quoteViewModel: QuoteViewModel = hiltViewModel()
-
-    val categoryState = remember {
-        quoteViewModel.categories
-    }
-    val isScreenLoaded = remember {
-        mutableStateOf(false)
-    }
-    val categoryData = categoryState.collectAsState(initial = ApiResponse.Loading)
-
-    when (val result = categoryData.value) {
-        is ApiResponse.Success -> {
-
-            val list = result.data
-
-            LaunchedEffect(key1 = true){
-                delay(2000)
-                isScreenLoaded.value = true
+fun QuoteListScreen(quoteViewModel: QuoteViewModel= hiltViewModel()) {
+//    onClick : (category:String)-> Unit
+//    val quoteViewModel: QuoteViewModel = hiltViewModel()
+//
+//    val  categoryFinalList = remember {
+//        mutableStateOf<List<String>?>(null)
+//    }
+//
+//    val categoryState = remember {
+//        quoteViewModel.categories
+//    }
+//
+//    val categoryData = categoryState.collectAsState(initial = ApiResponse.Loading)
+//
+//    when (val result = categoryData.value) {
+//        is ApiResponse.Success -> {
+//            categoryFinalList.value = result.data
+//            Log.d("post","${categoryFinalList.value?.distinct()}")
+//            QuoteListShow(categoryNamesList = categoryFinalList.value!!.distinct(), onClick =onClick)
+//        }
+//
+//        is ApiResponse.Failure -> {
+//            Log.d("post", result.msg)
+//        }
+//
+//        ApiResponse.Loading -> {
+//            CategoryLoadingScreen()
+//            Log.d("post", "Loading.... ")
+//        }
+//    }
+    LaunchedEffect(key1 = Unit){
+        quoteViewModel.categories.collect{
+            when(it){
+                is ApiResponse.Success->{
+                    Log.d("post","${it.data?.distinct()}")
+                }
+                is ApiResponse.Failure ->{
+                    Log.d("post","${it.msg}")
+                }
+                ApiResponse.Loading->{
+                    Log.d("post","Loading api calls")
+                }
             }
-
-            Log.d("post","${list?.distinct()}")
-
-            if (isScreenLoaded.value){
-                QuoteListShow(categoryNamesList = list!!.distinct(), onClick = onClick)
-            }else{
-                CategoryLoadingScreen()
-            }
-
-        }
-
-        is ApiResponse.Failure -> {
-            Log.d("post", result.msg)
-        }
-
-        ApiResponse.Loading -> {
-            CategoryLoadingScreen()
-            Log.d("post", "Loading.... ")
         }
     }
-
 
 }
+
+
 
 @Composable
 fun CategoryLoadingScreen() {

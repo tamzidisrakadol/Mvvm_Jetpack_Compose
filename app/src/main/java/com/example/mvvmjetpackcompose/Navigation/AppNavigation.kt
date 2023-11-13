@@ -10,24 +10,24 @@ import com.example.mvvmjetpackcompose.screens.QuoteDetailsScreen
 import com.example.mvvmjetpackcompose.screens.QuoteListScreen
 
 
-
-@Composable
-fun AppNavigation(){
-    val navController = rememberNavController()
-    NavHost(navController = navController, startDestination ="category"){
-        composable(route = "category"){
-            QuoteListScreen{
-                navController.navigate("details/${it}")
-            }
-        }
-        composable(route = "details/{category}",
-            arguments = listOf(
-                navArgument("category"){
-                    type = NavType.StringType
-                }
-            )
-        ){
-            QuoteDetailsScreen()
-        }
-    }
-}
+//
+//@Composable
+//fun AppNavigation(){
+//    val navController = rememberNavController()
+//    NavHost(navController = navController, startDestination ="category"){
+//        composable(route = "category"){
+//            QuoteListScreen{
+//                navController.navigate("details/${it}")
+//            }
+//        }
+//        composable(route = "details/{category}",
+//            arguments = listOf(
+//                navArgument("category"){
+//                    type = NavType.StringType
+//                }
+//            )
+//        ){
+//            QuoteDetailsScreen()
+//        }
+//    }
+//}

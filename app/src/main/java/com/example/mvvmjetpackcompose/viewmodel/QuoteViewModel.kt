@@ -10,9 +10,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.single
 
 @HiltViewModel
 class QuoteViewModel @Inject constructor(quoteRepo: QuoteRepo) :ViewModel() {
     val categories = quoteRepo.getCategories()
-
 }
